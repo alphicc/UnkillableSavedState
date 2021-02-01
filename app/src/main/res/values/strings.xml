@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">SaveStateSample</string>
+    <string name="string_fragment_name">hello from fragment</string>
+</resources>
