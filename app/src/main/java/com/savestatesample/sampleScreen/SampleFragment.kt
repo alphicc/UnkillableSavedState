@@ -12,6 +12,6 @@ class SampleFragment : Fragment(R.layout.fragment_sample) {
         super.onViewCreated(view, savedInstanceState)
 
         val viewModel = ViewModelProvider(this).get(SampleViewModel::class.java)
-        viewModel.sampleMethod()
+        viewModel.state
     }
 }
