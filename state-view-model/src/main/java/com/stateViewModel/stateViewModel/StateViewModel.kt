@@ -1,22 +1,18 @@
-package com.savestatesample.core
+package com.stateViewModel.stateViewModel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import com.stateViewModel.EmptyState
+import com.stateViewModel.STATE_ARE_NOT_INITIALIZED
 
-abstract class BaseViewModel<T : EmptyState>(application: Application) :
+abstract class StateViewModel<T : EmptyState>(application: Application) :
     AndroidViewModel(application) {
-
-    companion object {
-        private const val STATE_ARE_NOT_INITIALIZED =
-            "State are not initialized. Call the createState() method inside the provideState() method to initialize"
-    }
 
     init {
         @Suppress("LeakingThis") provideState()
     }
 
-    @PublishedApi
-    internal var state: T
+    var state: T
         get() = _state ?: throw IllegalStateException(STATE_ARE_NOT_INITIALIZED)
         set(value) {
             _state = value

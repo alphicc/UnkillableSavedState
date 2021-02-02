@@ -1,2 +1,3 @@
+include ':state-view-model'
 include ':app'
 rootProject.name = "SaveStateSample"
