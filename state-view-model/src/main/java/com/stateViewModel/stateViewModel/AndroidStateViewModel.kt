@@ -1,6 +1,7 @@
 package com.stateViewModel.stateViewModel
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
 import com.stateViewModel.EmptyState
@@ -8,15 +9,18 @@ import com.stateViewModel.STATE_ARE_NOT_INITIALIZED
 
 abstract class AndroidStateViewModel<T : EmptyState>(
     application: Application,
-    private val savedState: SavedStateHandle
+    val savedStateHandle: SavedStateHandle
 ) : AndroidViewModel(application) {
 
-    init {
-        @Suppress("LeakingThis") provideState()
-    }
+    //init {
+    //    @Suppress("LeakingThis") provideState()
+    //}
 
     var state: T
-        get() = _state ?: throw IllegalStateException(STATE_ARE_NOT_INITIALIZED)
+        get() {
+            if (_state == null) provideState()
+            return _state ?: throw IllegalStateException(STATE_ARE_NOT_INITIALIZED)
+        }
         set(value) {
             _state = value
         }
@@ -26,6 +30,8 @@ abstract class AndroidStateViewModel<T : EmptyState>(
     abstract fun provideState()
 
     protected inline fun <reified K : T> createState() {
+        Log.d("Alpha", "createState ${savedStateHandle.hashCode()}")
         state = K::class.java.newInstance()
+        state.setStateHandle(savedStateHandle)
     }
 }

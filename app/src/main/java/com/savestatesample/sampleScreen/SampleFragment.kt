@@ -19,7 +19,6 @@ class SampleFragment : Fragment(R.layout.fragment_sample) {
         super.onViewCreated(view, savedInstanceState)
 
         if (viewModel == null) {
-            Log.d("Alpha", "chee")
             viewModel = ViewModelProvider(
                 this,
                 SavedStateViewModelFactory(activity?.application, this)
