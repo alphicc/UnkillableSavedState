@@ -62,6 +62,12 @@ class UnkillableProcessor : AbstractProcessor() {
         element.enclosedElements.forEach { enclosedElement ->
             if (enclosedElement.kind == ElementKind.FIELD) {
                 classBuilder.addProperty(getVariable(enclosedElement))
+
+                val fullType = enclosedElement.asType().asTypeName().toString()
+                if (isLiveDataGeneric(fullType)) {
+                    classBuilder.addFunction(getLiveDataUpdateFunction(enclosedElement))
+                    classBuilder.addFunction(getLiveDataPostUpdateFunction(enclosedElement))
+                }
             }
         }
 
@@ -98,6 +104,34 @@ class UnkillableProcessor : AbstractProcessor() {
         return builder.build()
     }
 
+    private fun getLiveDataPostUpdateFunction(element: Element): FunSpec {
+        val fullType = element.asType().asTypeName().toString()
+        val genericTypeStart = fullType.indexOf("<")
+        val genericTypeEnd = fullType.indexOf(">")
+        val genericType =
+            ClassName("", fullType.substring(genericTypeStart + 1, genericTypeEnd)).copy(
+                true
+            )
+        return FunSpec.builder("postUpdate${element.simpleName.toString().capitalize()}Value")
+            .addParameter("value", genericType)
+            .addStatement("this.${element.simpleName}?.postValue(value)")
+            .build()
+    }
+
+    private fun getLiveDataUpdateFunction(element: Element): FunSpec {
+        val fullType = element.asType().asTypeName().toString()
+        val genericTypeStart = fullType.indexOf("<")
+        val genericTypeEnd = fullType.indexOf(">")
+        val genericType =
+            ClassName("", fullType.substring(genericTypeStart + 1, genericTypeEnd)).copy(
+                true
+            )
+        return FunSpec.builder("update${element.simpleName.toString().capitalize()}Value")
+            .addParameter("value", genericType)
+            .addStatement("this.${element.simpleName}?.value = value")
+            .build()
+    }
+
     private fun getVariable(element: Element): PropertySpec {
         val fullType = element.asType().asTypeName().toString()
         val className = when {
@@ -125,19 +159,29 @@ class UnkillableProcessor : AbstractProcessor() {
         }
 
         val variableName = "${element.simpleName}"
-        className.let {
-            return PropertySpec.builder(variableName, className)
-                .mutable()
+        val propertyBuilder = PropertySpec.builder(variableName, className)
+            .mutable()
+        if (!isLiveDataGeneric(fullType)) {
+            propertyBuilder
                 .setter(getUnkillableVariableSetter(element))
-                .initializer("null")
-                .build()
+                .addModifiers(KModifier.PRIVATE)
+        } else {
+            propertyBuilder.setter(
+                FunSpec.setterBuilder()
+                    .addModifiers(KModifier.PRIVATE)
+                    .build()
+            )
         }
+        return propertyBuilder.initializer("null").build()
     }
 
     private fun getUnkillableVariableSetter(element: Element): FunSpec {
         return FunSpec.setterBuilder()
             .addParameter("value", Any::class)
-            .addStatement("savedStateHandle?.set(\"${element.simpleName.toString().capitalize()}Key\", value)")
+            .addStatement(
+                "savedStateHandle?.set(\"${element.simpleName.toString().capitalize()}Key\", value)"
+            )
+            .addStatement("field=value")
             .build()
     }
 
