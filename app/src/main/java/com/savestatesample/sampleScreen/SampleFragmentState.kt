@@ -1,22 +1,14 @@
 package com.savestatesample.sampleScreen
 
-import android.util.Log
+import androidx.lifecycle.MutableLiveData
 import com.stateViewModel.EmptyState
+import com.state_view_model_annotations.Unkillable
 
-class SampleFragmentState : EmptyState() {
-
-
-    //null
-    //init {
-    //    val stateHandle = getStateHandle()
-    //    val res = stateHandle?.getLiveData<String>("TEXT")
-    //    Log.d("Alpha", "SampleFragmentState init ${res?.value} $stateHandle")
-    //}
-//
-    //restored and not null
-    //fun check() {
-    //    val stateHandle = getStateHandle()
-    //    val res = stateHandle?.getLiveData<String>("TEXT")
-    //    Log.d("Alpha", "SampleFragmentState check ${res?.value} $stateHandle")
-    //}
-}
+@Unkillable
+data class SampleFragmentState(
+    val test: Int,
+    val test2: MutableLiveData<String>,
+    val test3: List<Int>,
+    val test4: MyCustomClassSaved,
+    var test5: Boolean
+) : EmptyState()

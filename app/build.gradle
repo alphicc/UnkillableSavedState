@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    id 'kotlin-kapt'
 }
 
 android {
@@ -30,11 +31,19 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    sourceSets {
+        main {
+            java {
+                srcDir "${buildDir.absolutePath}/generated/source/kaptKotlin/"
+            }
+        }
+    }
 }
 
 dependencies {
 
     implementation project(path: ':state-view-model')
+    kapt project(':state-view-model-processor')
 
     // LiveData ktx
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.3.0-rc01'

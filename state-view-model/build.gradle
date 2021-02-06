@@ -30,17 +30,19 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    sourceSets {
+        main {
+            java {
+                srcDir "${buildDir.absolutePath}/generated/source/kaptKotlin/"
+            }
+        }
+    }
 }
 
 dependencies {
+    api project(":state-view-model-annotations")
 
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-savedstate:2.3.0-rc01'
+    compileOnly 'androidx.lifecycle:lifecycle-viewmodel-savedstate:2.3.0-rc01'
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation 'androidx.core:core-ktx:1.3.2'
-    implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'com.google.android.material:material:1.2.1'
-    testImplementation 'junit:junit:4.+'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 }

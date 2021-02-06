@@ -16,8 +16,8 @@ class SampleViewModel(
     val text : MutableLiveData<String> = savedStateHandle.getLiveData("TEXT")
 
     init {
-        //state.check()
         Log.d("Alpha", "SampleViewModel init ${text.value} ${savedStateHandle.hashCode()}")
+       // savedStateHandle.getLiveData<>()
     }
 
     override fun provideState() = createState<SampleFragmentState>()
@@ -25,5 +25,6 @@ class SampleViewModel(
     fun onSetTextClicked() {
         text.value = "SavedText"
         savedStateHandle.set("TEXT", text.value)
+        val test = savedStateHandle.get<String>("TEXT")
     }
 }

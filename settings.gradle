@@ -1,3 +1,5 @@
+include ':state-view-model-processor'
+include ':state-view-model-annotations'
 include ':state-view-model'
 include ':app'
 rootProject.name = "SaveStateSample"
