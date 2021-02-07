@@ -11,7 +11,9 @@ import javax.lang.model.SourceVersion
 import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind
 import javax.lang.model.element.TypeElement
+import javax.lang.model.type.DeclaredType
 import javax.tools.Diagnostic
+
 
 @AutoService(Processor::class)
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
@@ -56,6 +58,7 @@ class UnkillableProcessor : AbstractProcessor() {
 
         classBuilder
             .addProperty(getSavedStateHandleVariable())
+            .superclass(ClassName("com.stateViewModel", "EmptyState"))
             .addFunction(getConstructor())
         classBuilder.addInitializerBlock(getInitFunction(element.enclosedElements))
 
@@ -84,24 +87,107 @@ class UnkillableProcessor : AbstractProcessor() {
             .build()
     }
 
+    private fun getGenericTypeString(element: Element): String {
+        val fullType = element.asType().asTypeName().toString()
+        return if (isGeneric(fullType)) {
+            val pack = processingEnv.typeUtils.erasure(element.asType())
+            //val rawType = fullType.substring(pack.toString().length, fullType.length)
+            val generic = StringBuilder()
+            generic.append("<")
+            (element.asType() as DeclaredType).typeArguments.forEachIndexed { index, typeMirror ->
+                val el = processingEnv.typeUtils.asElement(typeMirror)
+                //val typeElement =
+                //    processingEnv.elementUtils.getTypeElement(rawType.substring(1, rawType.length - 1))
+                //"$pack<${getGenericTypeString(typeElement)}>"
+                //val elPack = processingEnv.typeUtils.erasure(el.asType())
+                if (index > 0) generic.append(", ${getGenericTypeString(el)}")
+                else generic.append(getGenericTypeString(el))
+                // processingEnv.messager.printMessage(
+                //     Diagnostic.Kind.ERROR,
+                //     "1 chee ${it.asTypeName().toString()}"
+                // )
+            }
+            generic.append("?>")
+            //val typeElement =
+            //    processingEnv.elementUtils.getTypeElement(rawType.substring(1, rawType.length - 1))
+            "$pack$generic"
+        } else fullType
+    }
+
+    private fun getGenericTypeClassName(element: Element): TypeName {
+        val typeName = element.asType().asTypeName()
+        val fullType = typeName.toString()
+        return if (isGeneric(fullType)) {
+            val pack = processingEnv.typeUtils.erasure(element.asType())
+            //val rawType = fullType.substring(pack.toString().length, fullType.length)
+            val parentClass = ClassName("", pack.toString())
+            //val generic = StringBuilder()
+            //generic.append("<")
+            val parameterElements = ArrayList<TypeName>()
+            (element.asType() as DeclaredType).typeArguments.forEachIndexed { index, typeMirror ->
+                //val type  = ClassName("", typeMirror.toString())
+                val result = getGenericTypeClassName(processingEnv.typeUtils.asElement(typeMirror))
+                parameterElements.add(result)
+
+                //val typeElement =
+                //    processingEnv.elementUtils.getTypeElement(rawType.substring(1, rawType.length - 1))
+                //"$pack<${getGenericTypeString(typeElement)}>"
+                //val elPack = processingEnv.typeUtils.erasure(el.asType())
+            }
+            //parseGeneric()
+            parentClass.parameterizedBy(parameterElements).copy(true)
+            //processingEnv.messager.printMessage(
+            //    Diagnostic.Kind.ERROR,
+            //    "el ${parentClass.toString()}"
+            //)
+           // parentClass
+            // generic.append("?>")
+            //val typeElement =
+            //    processingEnv.elementUtils.getTypeElement(rawType.substring(1, rawType.length - 1))
+        } else typeName.copy(true)
+    }
+
     private fun getInitFunction(elements: List<Element>): CodeBlock {
         val builder = CodeBlock.builder()
         elements.forEach {
             if (it.kind == ElementKind.FIELD) {
                 val fullType = it.asType().asTypeName().toString()
                 val name = it.simpleName.toString().capitalize()
+                //val result = getGenericTypeString(it)
+                //processingEnv.messager.printMessage(
+                //    Diagnostic.Kind.ERROR,
+                //    "result ${result} \n"
+                //)
                 if (isLiveDataGeneric(fullType)) {
+                    //processingEnv.messager.printMessage(Diagnostic.Kind.ERROR, "result $result")
                     builder.add(
                         "this.${"${it.simpleName}"} = savedStateHandle?.getLiveData(\"${name}Key\")\n"
                     )
+                } else if (isGeneric(fullType)) {
+                    builder.add(
+                        "this.${"${it.simpleName}"} = savedStateHandle?.get<${getGenericTypeString(
+                            it
+                        )}>(\"${name}Key\")\n"
+                    )
                 } else {
                     builder.add(
-                        "this.${"${it.simpleName}"} = savedStateHandle?.get(\"${name}Key\")\n"
+                        "this.${"${it.simpleName}"} = savedStateHandle?.get<${fullType}?>(\"${name}Key\")\n"
                     )
                 }
             }
         }
         return builder.build()
+    }
+
+    private fun parseGeneric(type: String): String {
+        if (isGeneric(type)) {
+            val genericTypeStart = type.indexOf("<")
+            val genericTypeEnd = type.indexOf(">")
+            val genericType = type.substring(0, genericTypeStart)
+            val genericParameter = type.substring(genericTypeStart + 1, genericTypeEnd)
+            return "${genericType}<${parseGeneric(genericParameter)}?>?"
+        }
+        return type
     }
 
     private fun getLiveDataPostUpdateFunction(element: Element): FunSpec {
@@ -146,14 +232,15 @@ class UnkillableProcessor : AbstractProcessor() {
                     .copy(true)
             }
             isGeneric(fullType) -> {
-                val genericTypeStart = fullType.indexOf("<")
-                val genericTypeEnd = fullType.indexOf(">")
-                val genericParameter =
-                    ClassName("", fullType.substring(genericTypeStart + 1, genericTypeEnd)).copy(
-                        true
-                    )
-                val genericType = fullType.substring(0, genericTypeStart)
-                ClassName("", genericType).parameterizedBy(genericParameter).copy(true)
+                //val genericTypeStart = fullType.indexOf("<")
+                //val genericTypeEnd = fullType.indexOf(">")
+                //val genericParameter =
+                //    ClassName("", fullType.substring(genericTypeStart + 1, genericTypeEnd)).copy(
+                //        true
+                //    )
+                //val genericType = fullType.substring(0, genericTypeStart)
+                //ClassName("", genericType).parameterizedBy(genericParameter).copy(true)
+                getGenericTypeClassName(element).copy(true)
             }
             else -> ClassName("", fullType).copy(true)
         }
@@ -200,5 +287,5 @@ class UnkillableProcessor : AbstractProcessor() {
         isGeneric(type) && type.contains("LiveData")
 
     private fun isGeneric(type: String): Boolean =
-        type.contains("<") && type.contains(">")
+        type.contains("<") && type.contains(">")// && !type.contains(",")
 }

@@ -28,9 +28,9 @@ class SampleFragment : Fragment(R.layout.fragment_sample) {
         val button = view.findViewById<Button>(R.id.button)
         button.setOnClickListener { viewModel?.onSetTextClicked() }
 
-        viewModel?.text?.observe(viewLifecycleOwner, Observer {
-            val textView = view.findViewById<TextView>(R.id.fragmentSampleTitleTextView)
-            textView.text = it
-        })
+        //viewModel?.text?.observe(viewLifecycleOwner, Observer {
+        //    val textView = view.findViewById<TextView>(R.id.fragmentSampleTitleTextView)
+        //    textView.text = it.toString()
+        //})
     }
 }

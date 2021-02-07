@@ -12,10 +12,6 @@ abstract class AndroidStateViewModel<T : EmptyState>(
     val savedStateHandle: SavedStateHandle
 ) : AndroidViewModel(application) {
 
-    //init {
-    //    @Suppress("LeakingThis") provideState()
-    //}
-
     var state: T
         get() {
             if (_state == null) provideState()
@@ -31,7 +27,8 @@ abstract class AndroidStateViewModel<T : EmptyState>(
 
     protected inline fun <reified K : T> createState() {
         Log.d("Alpha", "createState ${savedStateHandle.hashCode()}")
-        state = K::class.java.newInstance()
-        state.setStateHandle(savedStateHandle)
+        state = K::class.java.getDeclaredConstructor(SavedStateHandle::class.java).newInstance(savedStateHandle)
+        //state = K::class.java.newInstance()
+       // state.setStateHandle(savedStateHandle)
     }
 }
