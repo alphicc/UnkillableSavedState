@@ -12,8 +12,8 @@ import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind
 import javax.lang.model.element.TypeElement
 import javax.lang.model.type.DeclaredType
+import javax.lang.model.type.TypeMirror
 import javax.tools.Diagnostic
-
 
 @AutoService(Processor::class)
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
@@ -114,19 +114,41 @@ class UnkillableProcessor : AbstractProcessor() {
         } else fullType
     }
 
-    private fun getGenericTypeClassName(element: Element): TypeName {
-        val typeName = element.asType().asTypeName()
+    private fun getGenericTypeClass(fullType: String): TypeName {
+        return if (isGeneric(fullType)) {
+            val index = fullType.indexOf("<") + 1
+
+            val newType = fullType.substring(index, fullType.length - 1)
+
+            val parentClass = fullType.substring(0, index - 1)
+            //ClassName("", parentClass).parameterizedBy(getGenericTypeClass(newType))
+            /*processingEnv.messager.printMessage(
+                Diagnostic.Kind.ERROR,
+                "parentClass $parentClass"
+            )*/
+            ClassName("", parentClass).parameterizedBy(getGenericTypeClass(newType))
+        } else ClassName("", fullType)
+    }
+
+    private fun getGenericTypeClassName(element: TypeMirror): TypeName {
+        val typeName = element.asTypeName()
         val fullType = typeName.toString()
         return if (isGeneric(fullType)) {
-            val pack = processingEnv.typeUtils.erasure(element.asType())
+            val pack = processingEnv.typeUtils.erasure(element)
             //val rawType = fullType.substring(pack.toString().length, fullType.length)
             val parentClass = ClassName("", pack.toString())
             //val generic = StringBuilder()
             //generic.append("<")
             val parameterElements = ArrayList<TypeName>()
-            (element.asType() as DeclaredType).typeArguments.forEachIndexed { index, typeMirror ->
+            (element as DeclaredType).typeArguments.forEachIndexed { index, typeMirror ->
                 //val type  = ClassName("", typeMirror.toString())
-                val result = getGenericTypeClassName(processingEnv.typeUtils.asElement(typeMirror))
+                //(typeMirror as DeclaredType).typeArguments.forEach {
+                //    processingEnv.messager.printMessage(
+                //        Diagnostic.Kind.ERROR,
+                //        "it ${it.asTypeName().toString()}"
+                //    )
+                //}
+                val result = getGenericTypeClassName(typeMirror)
                 parameterElements.add(result)
 
                 //val typeElement =
@@ -140,7 +162,7 @@ class UnkillableProcessor : AbstractProcessor() {
             //    Diagnostic.Kind.ERROR,
             //    "el ${parentClass.toString()}"
             //)
-           // parentClass
+            // parentClass
             // generic.append("?>")
             //val typeElement =
             //    processingEnv.elementUtils.getTypeElement(rawType.substring(1, rawType.length - 1))
@@ -240,7 +262,9 @@ class UnkillableProcessor : AbstractProcessor() {
                 //    )
                 //val genericType = fullType.substring(0, genericTypeStart)
                 //ClassName("", genericType).parameterizedBy(genericParameter).copy(true)
-                getGenericTypeClassName(element).copy(true)
+                //getGenericTypeClass(element.asType().asTypeName().toString())
+                getGenericTypeClassName(element.asType()).copy(true)
+                //getGenericTypeClass(element.asType().asTypeName().toString())
             }
             else -> ClassName("", fullType).copy(true)
         }

@@ -6,5 +6,5 @@ import com.state_view_model_annotations.Unkillable
 
 @Unkillable
 data class SampleFragmentState(
-    val test: List<List<Int>>
+    val test: Map<List<Float>, Int>
 ) : EmptyState()
