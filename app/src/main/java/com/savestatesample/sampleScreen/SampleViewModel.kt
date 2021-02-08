@@ -2,7 +2,6 @@ package com.savestatesample.sampleScreen
 
 import android.app.Application
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.stateViewModel.stateViewModel.AndroidStateViewModel
 

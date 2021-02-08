@@ -87,21 +87,20 @@ class UnkillableProcessor : AbstractProcessor() {
             .build()
     }
 
-    private fun getGenericTypeString(element: Element): String {
-        val fullType = element.asType().asTypeName().toString()
+    private fun getGenericTypeString(element: TypeMirror): String {
+        val fullType = element.asTypeName().toString()
         return if (isGeneric(fullType)) {
-            val pack = processingEnv.typeUtils.erasure(element.asType())
+            val pack = processingEnv.typeUtils.erasure(element)
             //val rawType = fullType.substring(pack.toString().length, fullType.length)
             val generic = StringBuilder()
             generic.append("<")
-            (element.asType() as DeclaredType).typeArguments.forEachIndexed { index, typeMirror ->
-                val el = processingEnv.typeUtils.asElement(typeMirror)
+            (element as DeclaredType).typeArguments.forEachIndexed { index, typeMirror ->
                 //val typeElement =
                 //    processingEnv.elementUtils.getTypeElement(rawType.substring(1, rawType.length - 1))
                 //"$pack<${getGenericTypeString(typeElement)}>"
                 //val elPack = processingEnv.typeUtils.erasure(el.asType())
-                if (index > 0) generic.append(", ${getGenericTypeString(el)}")
-                else generic.append(getGenericTypeString(el))
+                if (index > 0) generic.append("?, ${getGenericTypeString(typeMirror)}")
+                else generic.append(getGenericTypeString(typeMirror))
                 // processingEnv.messager.printMessage(
                 //     Diagnostic.Kind.ERROR,
                 //     "1 chee ${it.asTypeName().toString()}"
@@ -111,7 +110,7 @@ class UnkillableProcessor : AbstractProcessor() {
             //val typeElement =
             //    processingEnv.elementUtils.getTypeElement(rawType.substring(1, rawType.length - 1))
             "$pack$generic"
-        } else fullType
+        } else processingEnv.typeUtils.asElement(element).simpleName.toString()
     }
 
     private fun getGenericTypeClass(fullType: String): TypeName {
@@ -180,21 +179,58 @@ class UnkillableProcessor : AbstractProcessor() {
                 //    Diagnostic.Kind.ERROR,
                 //    "result ${result} \n"
                 //)
-                if (isLiveDataGeneric(fullType)) {
-                    //processingEnv.messager.printMessage(Diagnostic.Kind.ERROR, "result $result")
-                    builder.add(
-                        "this.${"${it.simpleName}"} = savedStateHandle?.getLiveData(\"${name}Key\")\n"
-                    )
-                } else if (isGeneric(fullType)) {
-                    builder.add(
-                        "this.${"${it.simpleName}"} = savedStateHandle?.get<${getGenericTypeString(
-                            it
-                        )}>(\"${name}Key\")\n"
-                    )
-                } else {
-                    builder.add(
-                        "this.${"${it.simpleName}"} = savedStateHandle?.get<${fullType}?>(\"${name}Key\")\n"
-                    )
+                when {
+                    isLiveDataGeneric(fullType) -> {
+                        val typeArguments = (it.asType() as DeclaredType).typeArguments
+                        when {
+                            typeArguments.size > 1 -> {
+                                processingEnv.messager.printMessage(
+                                    Diagnostic.Kind.ERROR,
+                                    "Invalid LiveData generic parameter"
+                                )
+                            }
+                            typeArguments.size == 1 -> {
+                                val parameter = getGenericTypeString(typeArguments.first())
+                                builder.add(
+                                    "this.${"${it.simpleName}"} = savedStateHandle?.getLiveData<$parameter>(\"${name}Key\")\n"
+                                )
+                            }
+                            else -> {
+                                processingEnv.messager.printMessage(
+                                    Diagnostic.Kind.ERROR,
+                                    "Invalid LiveData"
+                                )
+                            }
+                        }
+
+                        //if ((it as DeclaredType).typeArguments.isNotEmpty()) {
+                        //} else {
+                        //    processingEnv.messager.printMessage(
+                        //        Diagnostic.Kind.ERROR,
+                        //        "Invalid LiveData generic parameter"
+                        //    )
+                        //}
+            //
+                        //(it as DeclaredType).typeArguments
+                        //it.asType().annotationMirrors
+                        //builder.add(
+                        //    "this.${"${it.simpleName}"} = savedStateHandle?.getLiveData<${newType}>(\"${name}Key\")\n"
+                        //)
+                    }
+                    isGeneric(fullType) -> {
+                        builder.add(
+                            "this.${"${it.simpleName}"} = savedStateHandle?.get<${
+                                getGenericTypeString(
+                                    it.asType()
+                                )
+                            }>(\"${name}Key\")\n"
+                        )
+                    }
+                    else -> {
+                        builder.add(
+                            "this.${"${it.simpleName}"} = savedStateHandle?.get<${fullType}?>(\"${name}Key\")\n"
+                        )
+                    }
                 }
             }
         }
@@ -213,29 +249,82 @@ class UnkillableProcessor : AbstractProcessor() {
     }
 
     private fun getLiveDataPostUpdateFunction(element: Element): FunSpec {
-        val fullType = element.asType().asTypeName().toString()
-        val genericTypeStart = fullType.indexOf("<")
-        val genericTypeEnd = fullType.indexOf(">")
-        val genericType =
-            ClassName("", fullType.substring(genericTypeStart + 1, genericTypeEnd)).copy(
-                true
-            )
-        return FunSpec.builder("postUpdate${element.simpleName.toString().capitalize()}Value")
-            .addParameter("value", genericType)
+        //val fullType = element.asType().asTypeName().toString()
+        //val genericTypeStart = fullType.indexOf("<")
+        //val genericTypeEnd = fullType.indexOf(">")
+        //val genericType =
+        //    ClassName("", fullType.substring(genericTypeStart + 1, genericTypeEnd)).copy(
+        //        true
+        //    )
+        //return FunSpec.builder("postUpdate${element.simpleName.toString().capitalize()}Value")
+        //    .addParameter("value", genericType)
+        //    .addStatement("this.${element.simpleName}?.postValue(value)")
+        //    .build()
+
+        val funBuilder = FunSpec.builder("postUpdate${element.simpleName.toString().capitalize()}Value")
+        //val funBuilder = FunSpec.builder("update${element.simpleName.toString().capitalize()}Value")
+        val typeArguments = (element.asType() as DeclaredType).typeArguments
+        when {
+            typeArguments.size > 1 -> {
+                processingEnv.messager.printMessage(
+                    Diagnostic.Kind.ERROR,
+                    "Invalid LiveData generic parameter"
+                )
+            }
+            typeArguments.size == 1 -> {
+                // val parameter = getGenericTypeString(typeArguments.first())
+                // builder.add(
+                //     "this.${"${it.simpleName}"} = savedStateHandle?.getLiveData<$parameter>(\"${name}Key\")\n"
+                // )
+                funBuilder.addParameter("value", getGenericTypeClassName(typeArguments.first()))
+            }
+            else -> {
+                processingEnv.messager.printMessage(
+                    Diagnostic.Kind.ERROR,
+                    "Invalid LiveData"
+                )
+            }
+        }
+
+        return funBuilder
             .addStatement("this.${element.simpleName}?.postValue(value)")
             .build()
     }
 
     private fun getLiveDataUpdateFunction(element: Element): FunSpec {
-        val fullType = element.asType().asTypeName().toString()
-        val genericTypeStart = fullType.indexOf("<")
-        val genericTypeEnd = fullType.indexOf(">")
-        val genericType =
-            ClassName("", fullType.substring(genericTypeStart + 1, genericTypeEnd)).copy(
-                true
-            )
-        return FunSpec.builder("update${element.simpleName.toString().capitalize()}Value")
-            .addParameter("value", genericType)
+        //val fullType = element.asType().asTypeName().toString()
+        //val genericTypeStart = fullType.indexOf("<")
+        //val genericTypeEnd = fullType.indexOf(">")
+        //val genericType =
+        //    ClassName("", fullType.substring(genericTypeStart + 1, genericTypeEnd)).copy(
+        //        true
+        //    )
+
+        val funBuilder = FunSpec.builder("update${element.simpleName.toString().capitalize()}Value")
+        val typeArguments = (element.asType() as DeclaredType).typeArguments
+        when {
+            typeArguments.size > 1 -> {
+                processingEnv.messager.printMessage(
+                    Diagnostic.Kind.ERROR,
+                    "Invalid LiveData generic parameter"
+                )
+            }
+            typeArguments.size == 1 -> {
+                // val parameter = getGenericTypeString(typeArguments.first())
+                // builder.add(
+                //     "this.${"${it.simpleName}"} = savedStateHandle?.getLiveData<$parameter>(\"${name}Key\")\n"
+                // )
+                funBuilder.addParameter("value", getGenericTypeClassName(typeArguments.first()))
+            }
+            else -> {
+                processingEnv.messager.printMessage(
+                    Diagnostic.Kind.ERROR,
+                    "Invalid LiveData"
+                )
+            }
+        }
+
+        return funBuilder
             .addStatement("this.${element.simpleName}?.value = value")
             .build()
     }
@@ -244,14 +333,16 @@ class UnkillableProcessor : AbstractProcessor() {
         val fullType = element.asType().asTypeName().toString()
         val className = when {
             isLiveDataGeneric(fullType) -> {
-                val genericTypeStart = fullType.indexOf("<")
-                val genericTypeEnd = fullType.indexOf(">")
-                val genericType =
-                    ClassName("", fullType.substring(genericTypeStart + 1, genericTypeEnd)).copy(
-                        true
-                    )
-                ClassName("androidx.lifecycle", "MutableLiveData").parameterizedBy(genericType)
-                    .copy(true)
+                //val pack = processingEnv.typeUtils.erasure(element.asType())
+                //val genericTypeStart = fullType.indexOf("<")
+                //val genericTypeEnd = fullType.indexOf(">")
+                //val genericType =
+                //    ClassName("", fullType.substring(genericTypeStart + 1, genericTypeEnd)).copy(
+                //        true
+                //    )
+                //ClassName("androidx.lifecycle", "MutableLiveData").parameterizedBy(genericType)
+                //    .copy(true)
+                getGenericTypeClassName(element.asType()).copy(true)
             }
             isGeneric(fullType) -> {
                 //val genericTypeStart = fullType.indexOf("<")
@@ -266,10 +357,11 @@ class UnkillableProcessor : AbstractProcessor() {
                 getGenericTypeClassName(element.asType()).copy(true)
                 //getGenericTypeClass(element.asType().asTypeName().toString())
             }
-            else -> ClassName("", fullType).copy(true)
+            else -> getGenericTypeClassName(element.asType()).copy(true)
         }
 
         val variableName = "${element.simpleName}"
+        processingEnv.messager.printMessage(Diagnostic.Kind.ERROR, "val $variableName / $className")
         val propertyBuilder = PropertySpec.builder(variableName, className)
             .mutable()
         if (!isLiveDataGeneric(fullType)) {
@@ -311,5 +403,5 @@ class UnkillableProcessor : AbstractProcessor() {
         isGeneric(type) && type.contains("LiveData")
 
     private fun isGeneric(type: String): Boolean =
-        type.contains("<") && type.contains(">")// && !type.contains(",")
+        type.contains("<") && type.contains(">")
 }
