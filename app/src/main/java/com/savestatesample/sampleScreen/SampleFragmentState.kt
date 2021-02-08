@@ -11,5 +11,6 @@ data class SampleFragmentState(
     val test3: Double,
     val test4: MyCustomClassSaved,
     val test5: List<MyCustomClassSaved>,
-    val test6: List<Int>
+    val test6: List<Int>,
+    val tabPosition: Int
 ) : EmptyState()

@@ -15,12 +15,18 @@ class SampleViewModel(
     override fun provideState() = createState<UnkillableSampleFragmentState>()
 
     init {
-        val t: Int? = savedStateHandle.get("11")
-        Log.d("Alpha", "tesss ${t}")
+        //  val t: Int? = savedStateHandle.get("11")
+        Log.d("Alpha", "0 tesss ${state.test3}")
+        Log.d("Alpha", "1 tesss ${savedStateHandle.get<Int>("Key")}")
     }
 
     fun onSetTextClicked() {
-        savedStateHandle.set("11", 321)
+        state.tabPosition = 2
+
+        // savedStateHandle.set("11", 321)
+        state.test3 = 1.1
+        savedStateHandle.set("Key", 2)
+
         //state.test = 1
         //text.value = state.test
     }

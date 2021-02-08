@@ -26,9 +26,6 @@ abstract class AndroidStateViewModel<T : EmptyState>(
     abstract fun provideState()
 
     protected inline fun <reified K : T> createState() {
-        Log.d("Alpha", "createState ${savedStateHandle.hashCode()}")
         state = K::class.java.getDeclaredConstructor(SavedStateHandle::class.java).newInstance(savedStateHandle)
-        //state = K::class.java.newInstance()
-       // state.setStateHandle(savedStateHandle)
     }
 }
