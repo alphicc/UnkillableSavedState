@@ -4,9 +4,10 @@ import com.google.auto.service.AutoService
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.state_view_model_annotations.Unkillable
-import com.state_view_model_processor.UnkillableProcessor.Companion.KAPT_KOTLIN_GENERATED_OPTION_NAME
+import com.state_view_model_processor.Processor.Companion.KAPT_KOTLIN_GENERATED_OPTION_NAME
 import java.io.File
 import javax.annotation.processing.*
+import javax.annotation.processing.Processor
 import javax.lang.model.SourceVersion
 import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind
@@ -19,7 +20,7 @@ import javax.tools.Diagnostic
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @SupportedOptions(KAPT_KOTLIN_GENERATED_OPTION_NAME)
 @Suppress("DefaultLocale")
-class UnkillableProcessor : AbstractProcessor() {
+class Processor : AbstractProcessor() {
 
     override fun getSupportedAnnotationTypes(): MutableSet<String> {
         return mutableSetOf(Unkillable::class.java.canonicalName)
@@ -100,7 +101,7 @@ class UnkillableProcessor : AbstractProcessor() {
             }
             generic.append("?>")
             "$pack$generic"
-        } else processingEnv.typeUtils.asElement(element).simpleName.toString()
+        } else ClassName("", TypeConverter(fullType).convertToKotlinType()).toString()
     }
 
     private fun getGenericTypeClassName(element: TypeMirror): TypeName {
@@ -115,7 +116,7 @@ class UnkillableProcessor : AbstractProcessor() {
                 parameterElements.add(result)
             }
             parentClass.parameterizedBy(parameterElements).copy(true)
-        } else typeName.copy(true)
+        } else ClassName("", TypeConverter(fullType).convertToKotlinType())
     }
 
     private fun getInitFunction(elements: List<Element>): CodeBlock {

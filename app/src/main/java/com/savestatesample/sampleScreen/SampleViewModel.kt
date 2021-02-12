@@ -10,24 +10,15 @@ class SampleViewModel(
     savedStateHandle: SavedStateHandle
 ) : AndroidStateViewModel<UnkillableSampleFragmentState>(application, savedStateHandle) {
 
-    //val text: MutableLiveData<Int?> = MutableLiveData(state.test)
-
     override fun provideState() = createState<UnkillableSampleFragmentState>()
 
     init {
-        //  val t: Int? = savedStateHandle.get("11")
-        Log.d("Alpha", "0 tesss ${state.test3}")
-        Log.d("Alpha", "1 tesss ${savedStateHandle.get<Int>("Key")}")
+        Log.d("StateLog", "0 value ${state.testValue}")
+        Log.d("StateLog", "1 value ${state.testLiveData?.value}")
     }
 
-    fun onSetTextClicked() {
-        state.tabPosition = 2
-
-        // savedStateHandle.set("11", 321)
-        state.test3 = 1.1
-        savedStateHandle.set("Key", 2)
-
-        //state.test = 1
-        //text.value = state.test
+    fun onSetDataClicked() {
+        state.testValue = 2.2
+        state.updateTestLiveDataValue(3.3)
     }
 }
