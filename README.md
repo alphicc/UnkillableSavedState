@@ -1,1 +1,8 @@
-# SaveStateSample
+# UnkillableSavedState
+
+UnkillableSavedState - это библиотека является надстройкой над [SavedStateHandle](https://developer.android.com/reference/androidx/lifecycle/SavedStateHandle) в ViewModel.
+Используется для того, чтобы облегчить работу разработчика с SavedStateHandle.
+
+
+При разработке проекта ставилась цель создать место, где можно хранить переменные и при этом, разработчик не переживал о том, что они будут уничтожены по причине освобождения памяти операционной системой. Также вы можете быть уверены, что при повороте экрана они никуда не исчезнут.
+
