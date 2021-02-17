@@ -2,7 +2,7 @@
 
 ## Description (en)
 
-### Описание (ru)
+## Описание (ru)
 
 UnkillableSavedState - это библиотека является надстройкой над [SavedStateHandle](https://developer.android.com/reference/androidx/lifecycle/SavedStateHandle) в ViewModel.
 Используется для того, чтобы облегчить работу разработчика с SavedStateHandle.
@@ -78,7 +78,7 @@ init {
 
 fun onSetDataClicked() {
     state.testValue = 2.2
-    state.updateTestLiveDataValue(3.3)
+    state.updateTestLiveDataValue(3.3) // yourLiveData.value = 3.3
+    state.postUpdateTestLiveDataValue(3.3) // yourLiveData.postValue(3.3)
 }
 ...
-```
