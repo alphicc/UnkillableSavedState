@@ -2,6 +2,88 @@
 
 ## Description (en)
 
+UnkillableSavedState - This library is an add-on over [SavedStateHandle] (https://developer.android.com/reference/androidx/lifecycle/SavedStateHandle) in the ViewModel.
+Used to make it easier for the developer to work with SavedStateHandle.
+
+
+When developing the project, the goal was to create a place where you can store variables and at the same time, the developer did not worry that they would be destroyed due to the release of memory by the operating system. You can also be sure that when you rotate the screen, they will not disappear anywhere.
+
+### Main feature
+UnkillableSavedState is convenient as it saves you the hassle of writing boilerplate code.
+
+### How to add?
+```kotlin
+dependencies {
+    //UnkillableSavedState
+    implementation("myLink")
+    kapt ("myLink2")
+}
+```
+### How to use?
+
+#### Step 1
+After you add the library to gradle, you can use it as follows.
+Let's assume you already have a Fragment and a ViewModel. You need a place where we will save our "unkillable" values.
+
+<img src="https://github.com/alphicc/UnkillableSavedState/blob/main/media/package%20example.png" alt="PackageExample.png" width="250"/>
+
+
+#### Step 2
+We declare data that will be "unkillable" in the data class. We build a project. (It is mandatory to build the project, since the library uses code generation. Work on simplifying this step is planned.)
+```kotlin
+@Unkillable
+data class SampleFragmentState(
+    val testValue: Double,
+    val testLiveData: MutableLiveData<Double>
+) : EmptyState()
+```
+
+#### Step 3
+The ViewModel needs to be initialized as follows. [More information] (https://developer.android.com/reference/androidx/lifecycle/SavedStateViewModelFactory)
+```kotlin
+activity?.application?.let { application -> 
+    viewModel = ViewModelProvider(this, SavedStateViewModelFactory(application, this))
+        .get(SampleViewModel::class.java) 
+}
+```
+
+#### Step 4
+Your ViewModel should look like this:
+```kotlin
+class SampleViewModel(
+    application: Application,
+    savedStateHandle: SavedStateHandle
+) : AndroidStateViewModel<UnkillableSampleFragmentState>(application, savedStateHandle) {
+
+    override fun provideState() = createState<UnkillableSampleFragmentState>()
+}
+```
+ViewModel must inherit from AndroidStateViewModel / StateViewModel, which inherited from AndroidViewModel and ViewModel respectively.
+UnkillableSampleFragmentState is the generated object obtained after starting kapt (See step 2).
+
+It's all.
+Now we can safely use the objects declared in SampleFragmentState. (Save something there or get it out)
+
+### Usage example
+
+```kotlin
+...
+
+init {
+    // get values example
+    Log.d("StateLog", "0 value ${state.testValue}") 
+    Log.d("StateLog", "1 value ${state.testLiveData?.value}")
+}
+
+fun onSetDataClicked() {
+    // set values example
+    state.testValue = 2.2
+    state.updateTestLiveDataValue(3.3) // yourLiveData.value = 3.3
+    state.postUpdateTestLiveDataValue(3.3) // yourLiveData.postValue(3.3)
+}
+...
+```
+
 ## Описание (ru)
 
 UnkillableSavedState - это библиотека является надстройкой над [SavedStateHandle](https://developer.android.com/reference/androidx/lifecycle/SavedStateHandle) в ViewModel.
