@@ -72,11 +72,13 @@ UnkillableSampleFragmentState это сгенерированный объект
 ...
 
 init {
-    Log.d("StateLog", "0 value ${state.testValue}")
+    // get values example
+    Log.d("StateLog", "0 value ${state.testValue}") 
     Log.d("StateLog", "1 value ${state.testLiveData?.value}")
 }
 
 fun onSetDataClicked() {
+    // set values example
     state.testValue = 2.2
     state.updateTestLiveDataValue(3.3) // yourLiveData.value = 3.3
     state.postUpdateTestLiveDataValue(3.3) // yourLiveData.postValue(3.3)
