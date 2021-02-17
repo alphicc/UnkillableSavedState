@@ -87,6 +87,7 @@ fun onSetDataClicked() {
 ```
 
 ## License
+```
 The MIT License (MIT)
 Copyright © 2021 Petr Shubin (@alphicc)
 
