@@ -26,6 +26,7 @@ dependencies {
 #### Шаг 1
 После того как Вы добавите библитеку в gradle, вы можете ее использовать следующим образом.
 Предположим, что у Вас уже есть Fragment и ViewModel. Вам нужно место куда будем сохранять наши "неубиваемые" значения.
+
 <img src="https://github.com/alphicc/UnkillableSavedState/blob/main/media/package%20example.png" alt="PackageExample.png" width="250"/>
 
 
