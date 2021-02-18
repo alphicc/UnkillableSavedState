@@ -31,8 +31,8 @@ allprojects {
 //app gradle
 dependencies {
     //UnkillableSavedState
-    implementation 'com.github.alphicc:UnkillableSavedState:v0.5.0'
-    kapt ("myLink2")
+    implementation 'com.github.alphicc:UnkillableSavedState:0.5.1'
+    kapt 'com.github.alphicc.UnkillableSavedState:state-view-model-processor:0.5.1'
 }
 ```
 ### How to use?
@@ -132,8 +132,8 @@ allprojects {
 //app gradle
 dependencies {
     //UnkillableSavedState
-    implementation 'com.github.alphicc:UnkillableSavedState:v0.5.0'
-    kapt ("myLink2")
+    implementation 'com.github.alphicc:UnkillableSavedState:0.5.1'
+    kapt 'com.github.alphicc.UnkillableSavedState:state-view-model-processor:0.5.1'
 }
 ```
 ### Как использовать?
