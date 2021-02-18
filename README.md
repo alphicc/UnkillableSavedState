@@ -1,5 +1,7 @@
 # UnkillableSavedState
 
+[![](https://jitpack.io/v/alphicc/UnkillableSavedState.svg)](https://jitpack.io/#alphicc/UnkillableSavedState)
+
 ## Description (en)
 
 UnkillableSavedState - This library is an add-on over [SavedStateHandle] (https://developer.android.com/reference/androidx/lifecycle/SavedStateHandle) in the ViewModel.
@@ -15,7 +17,7 @@ UnkillableSavedState is convenient as it saves you the hassle of writing boilerp
 ```kotlin
 dependencies {
     //UnkillableSavedState
-    implementation("myLink")
+    implementation 'com.github.alphicc:UnkillableSavedState:Tag'
     kapt ("myLink2")
 }
 ```
@@ -102,7 +104,7 @@ UnkillableSavedState это удобно, так как избавляет ва�
 ```kotlin
 dependencies {
     //UnkillableSavedState
-    implementation("myLink")
+    implementation 'com.github.alphicc:UnkillableSavedState:Tag'
     kapt ("myLink2")
 }
 ```
