@@ -1,7 +1,10 @@
 plugins {
     id 'java-library'
     id 'kotlin'
+    id 'maven'
 }
+
+group = 'com.github.alphicc'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8

@@ -15,11 +15,9 @@ class SampleFragment : Fragment(R.layout.fragment_sample) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (viewModel == null) {
-            viewModel = ViewModelProvider(
-                this,
-                SavedStateViewModelFactory(activity?.application, this)
-            ).get(SampleViewModel::class.java)
+        activity?.application?.let { application ->
+            viewModel = ViewModelProvider(this, SavedStateViewModelFactory(application, this))
+                .get(SampleViewModel::class.java)
         }
 
         val button = view.findViewById<Button>(R.id.button)
