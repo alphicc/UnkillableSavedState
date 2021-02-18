@@ -22,14 +22,14 @@ dependencies {
 ### How to use?
 
 #### Step 1
-After you add the library to gradle, you can use it as follows.
+After you add the library to Gradle, you can use it as follows.
 Let's assume you already have a Fragment and a ViewModel. You need a place where we will save our "unkillable" values.
 
 <img src="https://github.com/alphicc/UnkillableSavedState/blob/main/media/package%20example.png" alt="PackageExample.png" width="250"/>
 
 
 #### Step 2
-We declare data that will be "unkillable" in the data class. We build a project. (It is mandatory to build the project, since the library uses code generation. Work on simplifying this step is planned.)
+We declare data that will be "unkillable" in the data class. We build a project. (It is mandatory to build the project since the library uses code generation. Work on simplifying this step is planned.)
 ```kotlin
 @Unkillable
 data class SampleFragmentState(
@@ -83,6 +83,9 @@ fun onSetDataClicked() {
 }
 ...
 ```
+### Any ideas on how to improve the project?
+
+I am open to suggestions for the development of the project and will always be happy to consider ways to improve it.
 
 ## Описание (ru)
 
@@ -167,6 +170,10 @@ fun onSetDataClicked() {
 }
 ...
 ```
+
+### Есть идеи как можно улучшить проект?
+
+Я открыт для предложений по развитию проекта и всегда буду рад рассмотреть способы его улучшения.
 
 ## License
 ```
