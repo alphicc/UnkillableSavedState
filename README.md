@@ -15,6 +15,15 @@ UnkillableSavedState is convenient as it saves you the hassle of writing boilerp
 
 ### How to add?
 ```kotlin
+//Add it in your root build.gradle at the end of repositories:
+allprojects {
+		repositories {
+			...
+			maven { url 'https://jitpack.io' }
+		}
+}
+
+//app gradle
 dependencies {
     //UnkillableSavedState
     implementation 'com.github.alphicc:UnkillableSavedState:Tag'
@@ -102,6 +111,15 @@ UnkillableSavedState это удобно, так как избавляет ва�
 
 ### Как добавить?
 ```kotlin
+//Add it in your root build.gradle at the end of repositories:
+allprojects {
+		repositories {
+			...
+			maven { url 'https://jitpack.io' }
+		}
+}
+
+//app gradle
 dependencies {
     //UnkillableSavedState
     implementation 'com.github.alphicc:UnkillableSavedState:Tag'
