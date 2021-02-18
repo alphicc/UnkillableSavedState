@@ -15,6 +15,11 @@ UnkillableSavedState is convenient as it saves you the hassle of writing boilerp
 
 ### How to add?
 ```kotlin
+//plugin
+plugins {
+    id 'kotlin-kapt'
+}
+
 //Add it in your root build.gradle at the end of repositories:
 allprojects {
 	repositories {
@@ -111,6 +116,11 @@ UnkillableSavedState это удобно, так как избавляет ва�
 
 ### Как добавить?
 ```kotlin
+//plugin
+plugins {
+    id 'kotlin-kapt'
+}
+
 //Add it in your root build.gradle at the end of repositories:
 allprojects {
 	repositories {
