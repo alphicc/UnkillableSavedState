@@ -14,7 +14,7 @@ android {
         minSdkVersion 16
         targetSdkVersion 30
         versionCode 1
-        versionName "1.0"
+        versionName "0.5.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -45,7 +45,7 @@ android {
 dependencies {
     api project(":state-view-model-annotations")
 
-    compileOnly 'androidx.lifecycle:lifecycle-viewmodel-savedstate:2.3.0-rc01'
+    compileOnly 'androidx.lifecycle:lifecycle-viewmodel-savedstate:2.3.0'
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 }

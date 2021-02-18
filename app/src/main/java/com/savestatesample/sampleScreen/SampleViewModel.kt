@@ -20,5 +20,6 @@ class SampleViewModel(
     fun onSetDataClicked() {
         state.testValue = 2.2
         state.updateTestLiveDataValue(3.3)
+        state.postUpdateTestLiveDataValue(3.3)
     }
 }
