@@ -26,7 +26,7 @@ allprojects {
 //app gradle
 dependencies {
     //UnkillableSavedState
-    implementation 'com.github.alphicc:UnkillableSavedState:Tag'
+    implementation 'com.github.alphicc:UnkillableSavedState:v0.5.0'
     kapt ("myLink2")
 }
 ```
@@ -122,7 +122,7 @@ allprojects {
 //app gradle
 dependencies {
     //UnkillableSavedState
-    implementation 'com.github.alphicc:UnkillableSavedState:Tag'
+    implementation 'com.github.alphicc:UnkillableSavedState:v0.5.0'
     kapt ("myLink2")
 }
 ```
