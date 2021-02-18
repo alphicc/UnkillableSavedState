@@ -17,10 +17,10 @@ UnkillableSavedState is convenient as it saves you the hassle of writing boilerp
 ```kotlin
 //Add it in your root build.gradle at the end of repositories:
 allprojects {
-		repositories {
-			...
-			maven { url 'https://jitpack.io' }
-		}
+	repositories {
+		...
+		maven { url 'https://jitpack.io' }
+	}
 }
 
 //app gradle
@@ -113,10 +113,10 @@ UnkillableSavedState это удобно, так как избавляет ва�
 ```kotlin
 //Add it in your root build.gradle at the end of repositories:
 allprojects {
-		repositories {
-			...
-			maven { url 'https://jitpack.io' }
-		}
+	repositories {
+		...
+		maven { url 'https://jitpack.io' }
+	}
 }
 
 //app gradle
