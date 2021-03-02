@@ -61,7 +61,6 @@ class Processor : AbstractProcessor() {
             .addProperty(getSavedStateHandleVariable())
             .superclass(ClassName("com.stateViewModel", "EmptyState"))
             .addFunction(getConstructor(element.enclosedElements))
-        //classBuilder.addInitializerBlock(getInitFunction(element.enclosedElements))
 
         element.enclosedElements.forEach { enclosedElement ->
             if (enclosedElement.kind == ElementKind.FIELD) {
