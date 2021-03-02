@@ -15,6 +15,11 @@ UnkillableSavedState is convenient as it saves you the hassle of writing boilerp
 
 ### How to add?
 ```kotlin
+//plugin
+plugins {
+    id 'kotlin-kapt'
+}
+
 //Add it in your root build.gradle at the end of repositories:
 allprojects {
 	repositories {
@@ -26,8 +31,8 @@ allprojects {
 //app gradle
 dependencies {
     //UnkillableSavedState
-    implementation 'com.github.alphicc:UnkillableSavedState:v0.5.0'
-    kapt ("myLink2")
+    implementation 'com.github.alphicc:UnkillableSavedState:0.5.1'
+    kapt 'com.github.alphicc.UnkillableSavedState:state-view-model-processor:0.5.1'
 }
 ```
 ### How to use?
@@ -111,6 +116,11 @@ UnkillableSavedState это удобно, так как избавляет ва�
 
 ### Как добавить?
 ```kotlin
+//plugin
+plugins {
+    id 'kotlin-kapt'
+}
+
 //Add it in your root build.gradle at the end of repositories:
 allprojects {
 	repositories {
@@ -122,8 +132,8 @@ allprojects {
 //app gradle
 dependencies {
     //UnkillableSavedState
-    implementation 'com.github.alphicc:UnkillableSavedState:v0.5.0'
-    kapt ("myLink2")
+    implementation 'com.github.alphicc:UnkillableSavedState:0.5.1'
+    kapt 'com.github.alphicc.UnkillableSavedState:state-view-model-processor:0.5.1'
 }
 ```
 ### Как использовать?
